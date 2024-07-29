@@ -13,6 +13,7 @@ import com.example.and103_lab5.model.Distributor;
 
 import java.util.ArrayList;
 
+
 public class DistributorAdapter extends RecyclerView.Adapter<DistributorAdapter.ViewHolder> {
     private ArrayList<Distributor> list;
     private Context context;

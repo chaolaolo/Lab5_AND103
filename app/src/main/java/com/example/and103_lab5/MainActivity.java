@@ -47,24 +47,6 @@ public class MainActivity extends AppCompatActivity implements DistributorAdapte
 
         fetchAPI();
         userListener();
-
-        binding.edSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-
-                    String key = binding.edSearch.getText().toString().trim();
-                    httpRequest.callAPI()
-                            .searchDistributor(key)
-                            .enqueue(getDistributorAPI);
-                    Log.d(TAG, "onEditorAction: " + key);
-                    return true;
-                }
-                return false;
-            }
-        });
-
-
     }
     private void fetchAPI() {
         progressDialog = new ProgressDialog(this);
@@ -80,6 +62,21 @@ public class MainActivity extends AppCompatActivity implements DistributorAdapte
     }
 
     private void userListener() {
+        binding.edSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+
+                    String key = binding.edSearch.getText().toString().trim();
+                    httpRequest.callAPI()
+                            .searchDistributor(key)
+                            .enqueue(getDistributorAPI);
+                    Log.d(TAG, "onEditorAction: " + key);
+                    return true;
+                }
+                return false;
+            }
+        });
 
         binding.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements DistributorAdapte
 
 
     private void getData() {
+
+
         adapter = new DistributorAdapter(list, this,this );
         binding.rcvDistributor.setAdapter(adapter);
         progressDialog.dismiss();
@@ -132,8 +131,6 @@ public class MainActivity extends AppCompatActivity implements DistributorAdapte
                     getData();
                     Log.d(TAG, "onResponse: "+ list.size());
                 }
-            }else {
-                Log.e(TAG, "onResponse: response not successful");
             }
         }
 
@@ -146,26 +143,22 @@ public class MainActivity extends AppCompatActivity implements DistributorAdapte
     };
 
 
-    Callback<Response<ArrayList<Distributor>>> responseDistributorAPI  = new Callback<Response<ArrayList<Distributor>>>() {
+    Callback<Response<Distributor>> responseDistributorAPI  = new Callback<Response<Distributor>>() {
         @Override
-        public void onResponse(Call<Response<ArrayList<Distributor>>> call, retrofit2.Response<Response<ArrayList<Distributor>>> response) {
+        public void onResponse(Call<Response<Distributor>> call, retrofit2.Response<Response<Distributor>> response) {
             if (response.isSuccessful()) {
                 if (response.body().getStatus() == 200) {
-
-                    list = response.body().getData();
-                    getData();
-
-//                   httpRequest.callAPI()
-//                           .getListDistributor()
-//                           .enqueue(getDistributorAPI);
-//                    Toast.makeText(MainActivity.this, response.body().getMessenger(), Toast.LENGTH_SHORT).show();
+                    httpRequest.callAPI()
+                            .getListDistributor()
+                            .enqueue(getDistributorAPI);
+                    Toast.makeText(MainActivity.this, response.body().getMessenger(), Toast.LENGTH_SHORT).show();
                 }
             }
         }
 
         @Override
-        public void onFailure(Call<Response<ArrayList<Distributor>>> call, Throwable t) {
-
+        public void onFailure(Call<Response<Distributor>> call, Throwable t) {
+            Log.e(TAG, "onFailure: "+t.getMessage() );
         }
     };
 
@@ -212,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements DistributorAdapte
             dialog.dismiss();
         });
         builder.show();
+
 
     }
 
